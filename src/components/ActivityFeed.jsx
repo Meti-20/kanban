@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { db } from "../firebase";
 import { collection, getDocs, query, orderBy, deleteDoc, doc } from "firebase/firestore";
+import { useState, useEffect } from "react";
+import { db } from "../firebase";
 
 export default function ActivityFeed() {
   const [logs, setLogs] = useState([]);
@@ -25,15 +25,16 @@ export default function ActivityFeed() {
     return () => clearInterval(interval);
   }, []);
 
-  // Clear all activity logs function
-  const clearLogs = async () => {
+  // Clear all activity logs from Firestore
+  const handleClear = async () => {
+    if (!window.confirm("Are you sure you want to clear all activity logs?")) return;
     try {
       for (const log of logs) {
         await deleteDoc(doc(db, "activity", log.id));
       }
       setLogs([]);
-    } catch (err) {
-      console.error("Failed to clear activity feed:", err);
+    } catch (error) {
+      console.error("Failed to clear activity logs:", error);
     }
   };
 
@@ -48,30 +49,24 @@ export default function ActivityFeed() {
         margin: "20px auto",
         width: "80%",
         boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-        position: "relative",
       }}
     >
       <h3 style={{ marginBottom: "10px" }}>📜 Activity Feed</h3>
 
-      {logs.length > 0 && (
-        <button
-          onClick={clearLogs}
-          style={{
-            position: "absolute",
-            top: "20px",
-            right: "20px",
-            padding: "5px 10px",
-            fontSize: "12px",
-            cursor: "pointer",
-            borderRadius: "4px",
-            border: "none",
-            backgroundColor: "#dc3545",
-            color: "white",
-          }}
-        >
-          Clear Feed
-        </button>
-      )}
+      <button
+        onClick={handleClear}
+        style={{
+          marginBottom: "10px",
+          padding: "6px 12px",
+          backgroundColor: "#dc3545",
+          color: "white",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer"
+        }}
+      >
+        Clear Activity Feed
+      </button>
 
       {logs.length === 0 ? (
         <p>No activity yet.</p>
