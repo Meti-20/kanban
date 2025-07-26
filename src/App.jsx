@@ -1,4 +1,6 @@
+// src/App.jsx
 import React, { useState, useEffect } from "react";
+import AppLayout from "./components/AppLayout";
 import Board from "./components/Board";
 import ActivityFeed from "./components/ActivityFeed";
 
@@ -7,21 +9,28 @@ function App() {
     return localStorage.getItem("darkMode") === "true";
   });
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showTaskForm, setShowTaskForm] = useState(false);
+
   useEffect(() => {
     localStorage.setItem("darkMode", darkMode);
     document.body.className = darkMode ? "dark" : "";
   }, [darkMode]);
 
   return (
-    <div style={{ minHeight: "100vh", background: darkMode ? "#1e1e1e" : "#fff", color: darkMode ? "#fff" : "#000" }}>
-      <header style={{ padding: "10px", textAlign: "right" }}>
-        <button onClick={() => setDarkMode(!darkMode)} style={{ padding: "5px 10px" }}>
-          {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
-        </button>
-      </header>
-      <Board />
+    <AppLayout
+      darkMode={darkMode}
+      setDarkMode={setDarkMode}
+      setSearchTerm={setSearchTerm}
+    >
+      <Board
+        darkMode={darkMode}
+        searchTerm={searchTerm}
+        showTaskForm={showTaskForm}
+        setShowTaskForm={setShowTaskForm}
+      />
       <ActivityFeed />
-    </div>
+    </AppLayout>
   );
 }
 

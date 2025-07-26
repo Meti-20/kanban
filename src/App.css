@@ -1,3 +1,4 @@
+/* Keep your existing styles (logo, animations, etc.) */
 .App {
   text-align: center;
 }
@@ -35,4 +36,95 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* ===== ADD THESE NEW KANBAN STYLES BELOW ===== */
+
+/* Kanban Board Layout */
+.kanban-board {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  overflow-x: auto;
+  background: #f5f6f8; /* Light gray background */
+  min-height: 100vh;
+}
+
+.column {
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 300px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.column h2 {
+  margin: 0 0 12px 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+/* Task Cards */
+.task-card {
+  background: white;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  cursor: grab;
+}
+
+.task-card:active {
+  cursor: grabbing;
+}
+
+.task-card h3 {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.task-card p {
+  margin: 8px 0 0 0;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+/* Priority Labels */
+.priority {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  margin-left: 8px;
+}
+
+.priority-high {
+  background: #ff6b6b;
+  color: white;
+}
+
+.priority-medium {
+  background: #ffd166;
+  color: #333;
+}
+
+.priority-low {
+  background: #06d6a0;
+  color: white;
+}
+
+/* Add Task Button */
+.add-task-btn {
+  background: #5c6bc0;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 12px;
+}
+
+.add-task-btn:hover {
+  background: #3f51b5;
 }

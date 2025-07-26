@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from "react";
 
 const TaskForm = ({ onSubmit, onCancel, initialData = null }) => {
+  const [title, setTitle] = useState("");
   const [candidateName, setCandidateName] = useState("");
   const [jobRole, setJobRole] = useState("Frontend Developer");
   const [assignee, setAssignee] = useState("");
+  const [priority, setPriority] = useState("Medium");
   const [deadline, setDeadline] = useState("");
 
   useEffect(() => {
     if (initialData) {
+      setTitle(initialData.title || "");
       setCandidateName(initialData.candidateName || "");
       setJobRole(initialData.jobRole || "Frontend Developer");
       setAssignee(initialData.assignee || "");
+      setPriority(initialData.priority || "Medium");
       setDeadline(initialData.deadline || "");
     }
   }, [initialData]);
@@ -18,22 +22,26 @@ const TaskForm = ({ onSubmit, onCancel, initialData = null }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!candidateName || !jobRole || !assignee || !deadline) return;
+    if (!title || !candidateName || !jobRole || !assignee || !priority || !deadline) return;
 
     const taskData = {
       ...initialData,
+      title,
       candidateName,
       jobRole,
       assignee,
+      priority,
       deadline,
     };
 
     onSubmit(taskData);
 
     if (!initialData) {
+      setTitle("");
       setCandidateName("");
       setJobRole("Frontend Developer");
       setAssignee("");
+      setPriority("Medium");
       setDeadline("");
     }
   };
@@ -41,6 +49,16 @@ const TaskForm = ({ onSubmit, onCancel, initialData = null }) => {
   return (
     <form onSubmit={handleSubmit} style={formStyle}>
       <h3>{initialData ? "Edit Task" : "Add New Task"}</h3>
+
+      <label>Title:</label>
+      <input
+        type="text"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        required
+        style={inputStyle}
+        placeholder="Schedule interview with John"
+      />
 
       <label>Candidate Name:</label>
       <input
@@ -63,14 +81,30 @@ const TaskForm = ({ onSubmit, onCancel, initialData = null }) => {
         <option value="QA Tester">QA Tester</option>
       </select>
 
+      <label>Priority:</label>
+      <select
+        value={priority}
+        onChange={(e) => setPriority(e.target.value)}
+        required
+        style={inputStyle}
+      >
+        <option value="High">High</option>
+        <option value="Medium">Medium</option>
+        <option value="Low">Low</option>
+      </select>
+
       <label>Assignee:</label>
-      <input
-        type="text"
+      <select
         value={assignee}
         onChange={(e) => setAssignee(e.target.value)}
         required
         style={inputStyle}
-      />
+      >
+        <option value="">Select a member</option>
+        <option value="Alice">Alice</option>
+        <option value="Bob">Bob</option>
+        <option value="Charlie">Charlie</option>
+      </select>
 
       <label>Deadline:</label>
       <input
