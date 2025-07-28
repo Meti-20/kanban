@@ -1,41 +1,52 @@
 // src/components/Sidebar.jsx
-import React from "react";
+import React, { useState } from "react";
 
-const Sidebar = () => {
+const Sidebar = ({ setView }) => {
+  const [active, setActive] = useState("Kanban");
+
   const sidebarStyle = {
-    width: "200px",
+    width: "220px",
     height: "100vh",
-    backgroundColor: "#1e1e2f",
-    color: "white",
+    backgroundColor: "#ffffff",
+    borderRight: "1px solid #e0e0e0",
     padding: "20px",
-    boxSizing: "border-box",
     display: "flex",
     flexDirection: "column",
     gap: "20px",
+    boxShadow: "2px 0 10px rgba(0,0,0,0.05)",
   };
 
-  const navStyle = {
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px",
+  const titleStyle = {
+    fontSize: "20px",
+    fontWeight: "bold",
+    color: "#2c3e50",
+    marginBottom: "30px",
   };
 
-  const linkStyle = {
-    color: "#ccc",
-    textDecoration: "none",
-    fontSize: "1rem",
-    padding: "8px",
-    borderRadius: "6px",
-    transition: "0.3s",
+  const linkStyle = (label) => ({
+    padding: "12px 15px",
+    backgroundColor: active === label ? "#f0f0f0" : "transparent",
+    color: active === label ? "#007bff" : "#333",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontWeight: active === label ? "bold" : "normal",
+    transition: "all 0.2s",
+  });
+
+  const handleClick = (label) => {
+    setActive(label);
+    setView(label); // ← this updates the main view in App.jsx
   };
 
   return (
     <div style={sidebarStyle}>
-      <h2 style={{ margin: 0 }}>RecruitFlow</h2>
-      <nav style={navStyle}>
-        <a href="#" style={linkStyle}>Kanban Board</a>
-        <a href="#" style={linkStyle}>Settings</a>
-      </nav>
+      <div style={titleStyle}>Task Management</div>
+      <div style={linkStyle("Kanban")} onClick={() => handleClick("Kanban")}>
+        📋 Kanban Board
+      </div>
+      <div style={linkStyle("Settings")} onClick={() => handleClick("Settings")}>
+        ⚙️ Settings
+      </div>
     </div>
   );
 };

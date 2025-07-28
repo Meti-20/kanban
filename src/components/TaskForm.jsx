@@ -57,7 +57,6 @@ const TaskForm = ({ onSubmit, onCancel, initialData = null }) => {
         onChange={(e) => setTitle(e.target.value)}
         required
         style={inputStyle}
-        placeholder="Schedule interview with John"
       />
 
       <label>Candidate Name:</label>
@@ -94,17 +93,14 @@ const TaskForm = ({ onSubmit, onCancel, initialData = null }) => {
       </select>
 
       <label>Assignee:</label>
-      <select
+      <input
+        type="text"
         value={assignee}
         onChange={(e) => setAssignee(e.target.value)}
+        placeholder="Enter assignee name"
         required
         style={inputStyle}
-      >
-        <option value="">Select a member</option>
-        <option value="Alice">Alice</option>
-        <option value="Bob">Bob</option>
-        <option value="Charlie">Charlie</option>
-      </select>
+      />
 
       <label>Deadline:</label>
       <input

@@ -1,9 +1,12 @@
 // src/components/Board.jsx
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
 import Column from "./Column";
 import TaskForm from "./TaskForm";
+import Sidebar from "./Sidebar";
+import Topbar from "./Topbar";
 import ActivityFeed from "./ActivityFeed";
+import SettingsView from "./SettingsView";
 import { db } from "../firebase";
 import {
   collection,
@@ -15,13 +18,17 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 
-export default function Board({ searchTerm, darkMode }) {
+export default function Board() {
   const [incomplete, setIncomplete] = useState([]);
   const [inReview, setInReview] = useState([]);
   const [completed, setCompleted] = useState([]);
   const [done, setDone] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [darkMode, setDarkMode] = useState(false);
+  const [view, setView] = useState("Kanban");
+  const activityRef = useRef(null);
 
   const fetchTasks = useCallback(async () => {
     const querySnapshot = await getDocs(collection(db, "tasks"));
@@ -33,8 +40,7 @@ export default function Board({ searchTerm, darkMode }) {
     const filterTasks = (tasks) =>
       tasks.filter((task) => {
         const name = task?.candidateName || "";
-        const term = searchTerm || "";
-        return name.toLowerCase().includes(term.toLowerCase());
+        return name.toLowerCase().includes(searchTerm.toLowerCase());
       });
 
     setIncomplete(filterTasks(tasks.filter((t) => t.status === "1")));
@@ -156,79 +162,99 @@ export default function Board({ searchTerm, darkMode }) {
     }
   };
 
+  const renderView = () => {
+    if (view === "Kanban") {
+      return (
+        <>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+            <button
+              onClick={handleAddClick}
+              style={{
+                padding: "6px 14px",
+                backgroundColor: "#007bff",
+                color: "white",
+                border: "none",
+                borderRadius: "5px",
+                fontSize: "14px",
+                cursor: "pointer",
+              }}
+            >
+              + Add Task
+            </button>
+
+            <button
+              onClick={() => activityRef.current?.scrollIntoView({ behavior: "smooth" })}
+              style={{
+                padding: "6px 12px",
+                backgroundColor: "#28a745",
+                color: "white",
+                border: "none",
+                borderRadius: "5px",
+                fontSize: "14px",
+                cursor: "pointer",
+              }}
+            >
+              📜 Activity
+            </button>
+          </div>
+
+          {showForm && (
+            <div style={{ marginBottom: "0.5rem" }}>
+              <TaskForm
+                onSubmit={handleFormSubmit}
+                onCancel={handleCancel}
+                initialData={editingTask}
+              />
+            </div>
+          )}
+
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                flexWrap: "nowrap",
+                gap: "10px",
+                width: "100%",
+                overflowX: "hidden",
+              }}
+            >
+              <div style={{ flex: "1 1 0", maxWidth: "24%" }}>
+                <Column title="TO DO" tasks={incomplete} id="1" onEdit={handleEdit} onDelete={handleDelete} darkMode={darkMode} />
+              </div>
+              <div style={{ flex: "1 1 0", maxWidth: "24%" }}>
+                <Column title="IN PROGRESS" tasks={inReview} id="2" onEdit={handleEdit} onDelete={handleDelete} darkMode={darkMode} />
+              </div>
+              <div style={{ flex: "1 1 0", maxWidth: "24%" }}>
+                <Column title="COMPLETED" tasks={completed} id="3" onEdit={handleEdit} onDelete={handleDelete} darkMode={darkMode} />
+              </div>
+              <div style={{ flex: "1 1 0", maxWidth: "24%" }}>
+                <Column title="DONE" tasks={done} id="4" onEdit={handleEdit} onDelete={handleDelete} darkMode={darkMode} />
+              </div>
+            </div>
+          </DragDropContext>
+
+          <div ref={activityRef}>
+            <ActivityFeed />
+          </div>
+        </>
+      );
+    } else if (view === "Activity") {
+      return <ActivityFeed />;
+    } else if (view === "Settings") {
+      return <SettingsView />;
+    }
+  };
+
   return (
-    <div className={`board-wrapper ${darkMode ? "dark" : ""}`} style={{ padding: "1rem" }}>
-      <div style={{ textAlign: "center", marginBottom: "1rem" }}>
-        <button
-          onClick={handleAddClick}
-          style={{
-            padding: "10px 20px",
-            backgroundColor: "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-          }}
-        >
-          + Add Task
-        </button>
+    <div style={{ display: "flex", height: "100vh", backgroundColor: darkMode ? "#1e1e2f" : "#f1f1f1" }}>
+      <Sidebar setView={setView} />
+      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+        <Topbar darkMode={darkMode} setDarkMode={setDarkMode} setSearchTerm={setSearchTerm} />
+        <div style={{ padding: "10px", overflowY: "auto", flex: 1 }}>
+          {renderView()}
+        </div>
       </div>
-
-      {showForm && (
-        <div className="form-container">
-          <TaskForm
-            onSubmit={handleFormSubmit}
-            onCancel={handleCancel}
-            initialData={editingTask}
-          />
-        </div>
-      )}
-
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <div
-          className="kanban-columns"
-          style={{
-            display: "flex",
-            gap: "1rem",
-            overflowX: "auto",
-          }}
-        >
-          <Column
-            title="TO DO"
-            tasks={incomplete}
-            id="1"
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            darkMode={darkMode}
-          />
-          <Column
-            title="IN PROGRESS"
-            tasks={inReview}
-            id="2"
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            darkMode={darkMode}
-          />
-          <Column
-            title="COMPLETED"
-            tasks={completed}
-            id="3"
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            darkMode={darkMode}
-          />
-          <Column
-            title="DONE"
-            tasks={done}
-            id="4"
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            darkMode={darkMode}
-          />
-        </div>
-      </DragDropContext>
-
-      <ActivityFeed />
     </div>
   );
 }

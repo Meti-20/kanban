@@ -1,8 +1,8 @@
 // src/App.jsx
 import React, { useState, useEffect } from "react";
-import AppLayout from "./components/AppLayout";
 import Board from "./components/Board";
 import ActivityFeed from "./components/ActivityFeed";
+import SettingsView from "./components/SettingsView";
 
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
@@ -11,6 +11,7 @@ function App() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [showTaskForm, setShowTaskForm] = useState(false);
+  const [view, setView] = useState("Kanban");
 
   useEffect(() => {
     localStorage.setItem("darkMode", darkMode);
@@ -18,19 +19,23 @@ function App() {
   }, [darkMode]);
 
   return (
-    <AppLayout
-      darkMode={darkMode}
-      setDarkMode={setDarkMode}
-      setSearchTerm={setSearchTerm}
-    >
-      <Board
-        darkMode={darkMode}
-        searchTerm={searchTerm}
-        showTaskForm={showTaskForm}
-        setShowTaskForm={setShowTaskForm}
-      />
-      <ActivityFeed />
-    </AppLayout>
+    <>
+      {view === "Kanban" ? (
+        <Board
+          darkMode={darkMode}
+          setDarkMode={setDarkMode}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          showTaskForm={showTaskForm}
+          setShowTaskForm={setShowTaskForm}
+          setView={setView}
+        />
+      ) : view === "Settings" ? (
+        <SettingsView darkMode={darkMode} />
+      ) : (
+        <ActivityFeed />
+      )}
+    </>
   );
 }
 

@@ -1,8 +1,8 @@
 import { collection, getDocs, query, orderBy, deleteDoc, doc } from "firebase/firestore";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { db } from "../firebase";
 
-export default function ActivityFeed() {
+export default function ActivityFeed({ scrollRef }) {
   const [logs, setLogs] = useState([]);
 
   const fetchLogs = async () => {
@@ -25,7 +25,6 @@ export default function ActivityFeed() {
     return () => clearInterval(interval);
   }, []);
 
-  // Clear all activity logs from Firestore
   const handleClear = async () => {
     if (!window.confirm("Are you sure you want to clear all activity logs?")) return;
     try {
@@ -40,6 +39,7 @@ export default function ActivityFeed() {
 
   return (
     <div
+      ref={scrollRef}
       style={{
         padding: "20px",
         maxHeight: "250px",
