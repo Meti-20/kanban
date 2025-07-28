@@ -20,8 +20,8 @@ import {
 
 export default function Board() {
   const [incomplete, setIncomplete] = useState([]);
+  const [inProgress, setInProgress] = useState([]);
   const [inReview, setInReview] = useState([]);
-  const [completed, setCompleted] = useState([]);
   const [done, setDone] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
@@ -44,8 +44,8 @@ export default function Board() {
       });
 
     setIncomplete(filterTasks(tasks.filter((t) => t.status === "1")));
-    setInReview(filterTasks(tasks.filter((t) => t.status === "2")));
-    setCompleted(filterTasks(tasks.filter((t) => t.status === "3")));
+    setInProgress(filterTasks(tasks.filter((t) => t.status === "2")));
+    setInReview(filterTasks(tasks.filter((t) => t.status === "3")));
     setDone(filterTasks(tasks.filter((t) => t.status === "4")));
   }, [searchTerm]);
 
@@ -103,7 +103,7 @@ export default function Board() {
     const { destination, source, draggableId } = result;
     if (!destination || source.droppableId === destination.droppableId) return;
 
-    const allTasks = [...incomplete, ...inReview, ...completed, ...done];
+    const allTasks = [...incomplete, ...inProgress, ...inReview, ...done];
     const task = allTasks.find((t) => t.id === draggableId);
     if (!task) return;
 
@@ -135,8 +135,8 @@ export default function Board() {
   const getList = (listId) => {
     switch (listId) {
       case "1": return incomplete;
-      case "2": return inReview;
-      case "3": return completed;
+      case "2": return inProgress;
+      case "3": return inReview;
       case "4": return done;
       default: return [];
     }
@@ -145,8 +145,8 @@ export default function Board() {
   const getSetter = (listId) => {
     switch (listId) {
       case "1": return setIncomplete;
-      case "2": return setInReview;
-      case "3": return setCompleted;
+      case "2": return setInProgress;
+      case "3": return setInReview;
       case "4": return setDone;
       default: return () => {};
     }
@@ -156,7 +156,7 @@ export default function Board() {
     switch (id) {
       case "1": return "TO DO";
       case "2": return "IN PROGRESS";
-      case "3": return "COMPLETED";
+      case "3": return "IN REVIEW";
       case "4": return "DONE";
       default: return "UNKNOWN";
     }
@@ -223,10 +223,10 @@ export default function Board() {
                 <Column title="TO DO" tasks={incomplete} id="1" onEdit={handleEdit} onDelete={handleDelete} darkMode={darkMode} />
               </div>
               <div style={{ flex: "1 1 0", maxWidth: "24%" }}>
-                <Column title="IN PROGRESS" tasks={inReview} id="2" onEdit={handleEdit} onDelete={handleDelete} darkMode={darkMode} />
+                <Column title="IN PROGRESS" tasks={inProgress} id="2" onEdit={handleEdit} onDelete={handleDelete} darkMode={darkMode} />
               </div>
               <div style={{ flex: "1 1 0", maxWidth: "24%" }}>
-                <Column title="COMPLETED" tasks={completed} id="3" onEdit={handleEdit} onDelete={handleDelete} darkMode={darkMode} />
+                <Column title="IN REVIEW" tasks={inReview} id="3" onEdit={handleEdit} onDelete={handleDelete} darkMode={darkMode} />
               </div>
               <div style={{ flex: "1 1 0", maxWidth: "24%" }}>
                 <Column title="DONE" tasks={done} id="4" onEdit={handleEdit} onDelete={handleDelete} darkMode={darkMode} />
