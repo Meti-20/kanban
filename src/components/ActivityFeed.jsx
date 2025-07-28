@@ -5,6 +5,7 @@ import { db } from "../firebase";
 export default function ActivityFeed({ scrollRef }) {
   const [logs, setLogs] = useState([]);
 
+  // Fetch logs from Firestore
   const fetchLogs = async () => {
     try {
       const q = query(collection(db, "activity"), orderBy("timestamp", "desc"));
@@ -19,12 +20,14 @@ export default function ActivityFeed({ scrollRef }) {
     }
   };
 
+  // Fetch logs on mount and refresh every 5s
   useEffect(() => {
     fetchLogs();
     const interval = setInterval(fetchLogs, 5000);
     return () => clearInterval(interval);
   }, []);
 
+  // Clear all logs
   const handleClear = async () => {
     if (!window.confirm("Are you sure you want to clear all activity logs?")) return;
     try {
@@ -76,7 +79,17 @@ export default function ActivityFeed({ scrollRef }) {
             <li key={log.id}>
               {log.message}{" "}
               <small style={{ color: "#555" }}>
-                ({new Date(log.timestamp?.toDate?.()).toLocaleTimeString()})
+                (
+                {log.timestamp?.toDate
+                  ? log.timestamp.toDate().toLocaleString(undefined, {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      hour: "numeric",
+                      minute: "numeric",
+                    })
+                  : "Unknown time"}
+                )
               </small>
             </li>
           ))}

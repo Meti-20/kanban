@@ -79,6 +79,10 @@ export default function Board() {
         createdAt: serverTimestamp(),
       };
       await addDoc(collection(db, "tasks"), newTask);
+      await addDoc(collection(db, "activity"), {
+        message: `New task "${task.candidateName}" added.`,
+        timestamp: serverTimestamp(),
+      });
     }
     setShowForm(false);
     setEditingTask(null);
@@ -91,7 +95,7 @@ export default function Board() {
       await deleteDoc(doc(db, "tasks", task.id));
       await addDoc(collection(db, "activity"), {
         message: `Task "${task.candidateName}" was deleted.`,
-        timestamp: new Date().toISOString(),
+        timestamp: serverTimestamp(),
       });
       fetchTasks();
     } catch (error) {
@@ -116,7 +120,7 @@ export default function Board() {
 
     await addDoc(collection(db, "activity"), {
       message: `${task.candidateName} moved to ${getStatusName(destination.droppableId)}.`,
-      timestamp: new Date().toISOString(),
+      timestamp: serverTimestamp(),
     });
   };
 
